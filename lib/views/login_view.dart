@@ -1,6 +1,7 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/services/authentication/authentication_exceptions.dart';
+import 'package:mynotes/services/authentication/authentication_service.dart';
 
 import '../common/notifications.dart';
 
@@ -12,6 +13,7 @@ class LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<LoginView> {
+  final authenticationService = AuthenticationService();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
@@ -60,21 +62,20 @@ class _LoginViewState extends State<LoginView> {
                   String emailAddress = _email.text;
                   String password = _password.text;
                   try {
-                    await FirebaseAuth.instance.signInWithEmailAndPassword(
+                    await authenticationService.login(
                       email: emailAddress,
                       password: password,
                     );
-                  } on FirebaseAuthException catch (e) {
-                    if (e.code == 'user-not-found') {
-                      showErrorMessage(context, "Authentication failure",
-                          'User with email $emailAddress not found');
-                    } else if (e.code == 'wrong-password') {
-                      showErrorMessage(context, "Authentication failure",
-                          'Entered wrong password');
-                    } else {
-                      showErrorMessage(context, "Authentication failure",
-                          e.message ?? "Unknown");
-                    }
+                  } on UserNotFoundException {
+                    showErrorMessage(context, 'Login', 'User with given email not found');
+                  } on WrongPasswordException {
+                    showErrorMessage(context, 'Login', 'Wrong password');
+                  } on InvalidEmailException {
+                    showErrorMessage(context, 'Login', 'Invalid email address provided');
+                  } on UserIsNotEnabledException {
+                    showErrorMessage(context, 'Login', 'User is not enabled');
+                  } on AuthenticationException {
+                    showErrorMessage(context, 'Login', 'Could not authenticate');
                   }
                 }
               }),
