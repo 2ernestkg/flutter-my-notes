@@ -3,13 +3,15 @@ import 'package:mynotes/services/authentication/auth_provider/firebase_auth_prov
 import 'package:mynotes/services/authentication/authentication.dart';
 
 class AuthenticationService {
-  final Authentication _auth;
+  Authentication _auth;
   final AuthProvider _provider;
 
-  factory  AuthenticationService() => _instance;
-  static final AuthenticationService _instance = AuthenticationService._privateConstructor(FirebaseAuthProvider());
+  factory AuthenticationService() => _instance;
+  static final AuthenticationService _instance =
+      AuthenticationService._privateConstructor(FirebaseAuthProvider());
 
-  AuthenticationService._privateConstructor(this._provider) : _auth = AnonymousAuthentication();
+  AuthenticationService._privateConstructor(this._provider)
+      : _auth = AnonymousAuthentication();
 
   Authentication get auth => _auth;
 
@@ -28,6 +30,7 @@ class AuthenticationService {
   }
 
   Future<void> logout() {
+    _auth = AnonymousAuthentication();
     return _provider.logout();
   }
 
