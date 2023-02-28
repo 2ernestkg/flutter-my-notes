@@ -1,7 +1,7 @@
 import 'dart:developer' as developer;
 
 import 'package:flutter/material.dart';
-import 'package:mynotes/common/notifications.dart';
+import 'package:mynotes/common/dialogs.dart';
 import 'package:mynotes/routes.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
 import 'package:mynotes/views/verify_email_view.dart';

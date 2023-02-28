@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mynotes/common/notifications.dart';
+import 'package:mynotes/common/dialogs.dart';
 import 'package:mynotes/routes.dart';
 import 'package:mynotes/services/authentication/authentication_exceptions.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';

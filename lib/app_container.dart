@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:mynotes/login_view.dart';
 import 'package:mynotes/services/authentication/authentication.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
+import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/main_view.dart';
 
 class AppContainer extends StatefulWidget {

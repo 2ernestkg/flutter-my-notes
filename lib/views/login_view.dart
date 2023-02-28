@@ -1,10 +1,9 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
+import 'package:mynotes/common/dialogs.dart';
+import 'package:mynotes/routes.dart';
 import 'package:mynotes/services/authentication/authentication_exceptions.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
-
-import '../common/notifications.dart';
-import '../routes.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});

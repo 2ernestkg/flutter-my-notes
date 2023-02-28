@@ -18,15 +18,22 @@ class AuthenticationService {
   Future<Authentication> login({
     required String email,
     required String password,
-  }) {
-    return _provider.login(username: email, password: password);
+  }) async {
+    _auth = await _provider.login(
+      username: email,
+      password: password,
+    );
+    return _auth;
   }
 
   Future<Authentication> register({
     required String email,
     required String password,
   }) {
-    return _provider.createUser(username: email, password: password);
+    return _provider.createUser(
+      username: email,
+      password: password,
+    );
   }
 
   Future<void> logout() {
