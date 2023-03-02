@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mynotes/services/authentication/authentication.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
 import 'package:mynotes/views/login_view.dart';
-import 'package:mynotes/views/main_view.dart';
+import 'package:mynotes/views/notes/notes_view.dart';
 
 class AppContainer extends StatefulWidget {
   const AppContainer({super.key});
@@ -22,6 +22,6 @@ class _AppContainerState extends State<AppContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return _currentUser.isAuthenticated ? const MainView() : const LoginView();
+    return _currentUser.isAuthenticated ? const NotesView() : const LoginView();
   }
 }
