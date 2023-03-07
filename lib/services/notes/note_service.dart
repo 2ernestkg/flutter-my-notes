@@ -8,24 +8,25 @@ class NoteService {
   List<Note> cache = [];
   final _auth = AuthenticationService().auth;
   final _notesProvider = DatabaseNoteProvider();
-  late final StreamController<Iterable<Note>> _notesStreamController;
+  late final StreamController<List<Note>> _notesStreamController;
 
   static final NoteService _instance = NoteService._privateConstructor();
   NoteService._privateConstructor() {
     _notesStreamController =
-        StreamController<Iterable<Note>>.broadcast(onListen: () {
+        StreamController<List<Note>>.broadcast(onListen: () {
       _notesStreamController.sink.add(cache);
     });
   }
   factory NoteService() => _instance;
 
-  Stream<Iterable<Note>> get notes => _notesStreamController.stream;
+  Stream<List<Note>> get notes => _notesStreamController.stream;
 
-  Future<void> initialize() async {
+  Future<Iterable<Note>> getUserNotes() async {
     Iterable<Note> userNotes =
         await _notesProvider.getUserNotes(_auth.username);
     cache = userNotes.toList();
-    _notesStreamController.add(userNotes);
+    _notesStreamController.add(cache);
+    return cache;
   }
 
   Future<Note> createNote(String text) async {
@@ -44,6 +45,7 @@ class NoteService {
   Future<Note> updateNote(String id, String text) async {
     Note updated = await _notesProvider.update(id, text);
     cache.removeWhere((note) => note.id == id);
+    cache.add(updated);
     _notesStreamController.add(cache);
     return updated;
   }

@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mynotes/routes.dart';
 import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/views/notes/note_form.dart';
 import 'package:mynotes/views/notes/notes_view.dart';
 import 'package:mynotes/views/register_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
@@ -28,6 +29,7 @@ class MyApp extends StatelessWidget {
         Routes.registerRoute: (context) => const RegisterView(),
         Routes.notesRoute: (context) => const NotesView(),
         Routes.verifyEmailRoute: (context) => const VerifyEmailView(),
+        Routes.notesForm: (context) => const NoteFormView(),
       },
       home: FutureBuilder(
         future: Firebase.initializeApp(),

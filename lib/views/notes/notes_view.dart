@@ -4,7 +4,9 @@ import 'package:mynotes/common/dialogs.dart';
 import 'package:mynotes/routes.dart';
 import 'package:mynotes/services/authentication/authentication.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
-import 'package:mynotes/views/notes/notes_service.dart';
+import 'package:mynotes/services/notes/note.dart';
+import 'package:mynotes/services/notes/note_service.dart';
+import 'package:mynotes/views/notes/note_list_view.dart';
 import 'package:mynotes/views/verify_email_view.dart';
 
 class NotesView extends StatefulWidget {
@@ -16,11 +18,11 @@ class NotesView extends StatefulWidget {
 
 class _NotesViewState extends State<NotesView> {
   final _authenticationService = AuthenticationService();
-  final _notesService = NotesService();
+  final _noteService = NoteService();
 
   @override
   void dispose() {
-    _notesService.close();
+    _noteService.close();
     super.dispose();
   }
 
@@ -35,7 +37,7 @@ class _NotesViewState extends State<NotesView> {
       appBar: AppBar(title: const Text('Notes'), actions: [
         IconButton(
           icon: const Icon(
-            Icons.plus_one_rounded,
+            Icons.add,
           ),
           onPressed: () {
             Navigator.of(context).pushNamed(Routes.notesForm);
@@ -62,7 +64,35 @@ class _NotesViewState extends State<NotesView> {
           }
         }),
       ]),
-      body: const Text('notes'),
+      body: FutureBuilder(
+        future: _noteService.getUserNotes(),
+        builder: (builder, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          return StreamBuilder(
+            stream: _noteService.notes,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              }
+              final notes = snapshot.data as List<Note>;
+              return NoteListView(
+                notes: notes,
+                onDelete: (note) async {
+                  await _noteService.deleteNote(note.id);
+                },
+                onTap: (note) {
+                  Navigator.of(context).pushNamed(
+                    Routes.notesForm,
+                    arguments: note,
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 }

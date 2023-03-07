@@ -1,5 +1,32 @@
 import 'package:flutter/material.dart';
 
+Future<bool?> showConfirmDeleteDialog(BuildContext context) {
+  final confirmDialog = AlertDialog(
+    title: const Text('Confirm note deletion'),
+    content: const Text('Are you sure to delete a note?'),
+    actions: [
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop(true);
+        },
+        child: const Text('Yes'),
+      ),
+      TextButton(
+        onPressed: () {
+          Navigator.of(context).pop(false);
+        },
+        child: const Text('No'),
+      ),
+    ],
+  );
+  return showDialog(
+    context: context,
+    builder: (context) {
+      return confirmDialog;
+    },
+  );
+}
+
 Future<bool?> showLogOutDialog(BuildContext context) {
   return showDialog<bool>(
       context: context,

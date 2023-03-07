@@ -41,7 +41,7 @@ class DatabaseNoteProvider extends NoteProvider {
     final db = await _getDatabaseConnection();
     final currentUser = await _getOrCreateUser(uid);
     final notes = await db
-        .query(userTable, where: 'user_id=?', whereArgs: [currentUser.id]);
+        .query(noteTable, where: 'user_id=?', whereArgs: [currentUser.id]);
     return notes
         .map((noteRow) => DatabaseNote.fromRow(noteRow))
         .map((dn) => Note(id: dn.id.toString(), text: dn.text))
