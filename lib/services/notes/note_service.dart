@@ -1,13 +1,14 @@
 import 'dart:async';
 
 import 'package:mynotes/services/authentication/authentication_service.dart';
-import 'package:mynotes/services/notes/database/database_note_provider.dart';
+import 'package:mynotes/services/notes/cloud/cloud_note_provider.dart';
 import 'package:mynotes/services/notes/note.dart';
+import 'package:mynotes/services/notes/note_provider.dart';
 
 class NoteService {
   List<Note> cache = [];
   final _auth = AuthenticationService().auth;
-  final _notesProvider = DatabaseNoteProvider();
+  final NoteProvider _notesProvider = CloudProvider();
   late final StreamController<List<Note>> _notesStreamController;
 
   static final NoteService _instance = NoteService._privateConstructor();
@@ -22,15 +23,14 @@ class NoteService {
   Stream<List<Note>> get notes => _notesStreamController.stream;
 
   Future<Iterable<Note>> getUserNotes() async {
-    Iterable<Note> userNotes =
-        await _notesProvider.getUserNotes(_auth.username);
+    Iterable<Note> userNotes = await _notesProvider.getUserNotes(_auth.id);
     cache = userNotes.toList();
     _notesStreamController.add(cache);
     return cache;
   }
 
   Future<Note> createNote(String text) async {
-    Note newNote = await _notesProvider.createNote(_auth.username, text);
+    Note newNote = await _notesProvider.createNote(_auth.id, text);
     cache.add(newNote);
     _notesStreamController.add(cache);
     return newNote;
@@ -51,6 +51,6 @@ class NoteService {
   }
 
   Future<void> close() async {
-    _notesProvider.close();
+    await _notesProvider.close();
   }
 }

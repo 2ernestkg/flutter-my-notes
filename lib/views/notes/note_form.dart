@@ -82,7 +82,7 @@ class _NoteFormViewState extends State<NoteFormView> {
           if (snapshot.connectionState != ConnectionState.done) {
             return const CircularProgressIndicator();
           }
-          _setupTextControllerListener();
+          //_setupTextControllerListener();
           return Column(
             children: [
               Padding(

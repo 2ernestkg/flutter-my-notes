@@ -10,11 +10,12 @@ class FirebaseAuthProvider implements AuthProvider {
   Future<Authentication> createUser(
       {required String username, required String password}) async {
     try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: username,
         password: password,
       );
       return UsernameAndPasswordAuthentication(
+        id: userCredential.user!.uid,
         username: username,
         isAuthenticated: false,
         isEmailVerified: false,
@@ -46,6 +47,7 @@ class FirebaseAuthProvider implements AuthProvider {
         return AnonymousAuthentication();
       }
       return UsernameAndPasswordAuthentication(
+        id: currentUser.uid,
         username: username,
         isAuthenticated: true,
         isEmailVerified: currentUser.emailVerified,
