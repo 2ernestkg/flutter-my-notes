@@ -52,8 +52,8 @@ Future<bool?> showLogOutDialog(BuildContext context) {
       });
 }
 
-void showErrorMessage(BuildContext context, title, String message) {
-  showDialog(
+Future<void> showErrorMessage(BuildContext context, title, String message) {
+  return showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(

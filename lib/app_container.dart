@@ -1,27 +1,31 @@
 import 'package:flutter/material.dart';
-import 'package:mynotes/services/authentication/authentication.dart';
-import 'package:mynotes/services/authentication/authentication_service.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mynotes/services/authentication/bloc/auth_bloc.dart';
+import 'package:mynotes/services/authentication/bloc/auth_state.dart';
 import 'package:mynotes/views/login_view.dart';
 import 'package:mynotes/views/notes/notes_view.dart';
+import 'package:mynotes/views/register_view.dart';
+import 'package:mynotes/views/verify_email_view.dart';
 
-class AppContainer extends StatefulWidget {
+class AppContainer extends StatelessWidget {
   const AppContainer({super.key});
 
   @override
-  State<AppContainer> createState() => _AppContainerState();
-}
-
-class _AppContainerState extends State<AppContainer> {
-  late final Authentication _currentUser;
-
-  @override
-  void initState() {
-    super.initState();
-    _currentUser = AuthenticationService().auth;
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return _currentUser.isAuthenticated ? const NotesView() : const LoginView();
+    return BlocBuilder<AuthBloc, AuthState>(builder: (context, state) {
+      if (state is UnauthenticatedState) {
+        return const LoginView();
+      } else if (state is AuthenticatedState) {
+        return const NotesView();
+      } else if (state is AuthenticationNeedsVerificationState) {
+        return const VerifyEmailView();
+      } else if (state is AuthenticationNeedsRegistrationState) {
+        return const RegisterView();
+      } else {
+        return const Scaffold(
+          body: CircularProgressIndicator(),
+        );
+      }
+    });
   }
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/common/dialogs.dart';
-import 'package:mynotes/routes.dart';
-import 'package:mynotes/services/authentication/authentication_exceptions.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
+import 'package:mynotes/services/authentication/bloc/auth_bloc.dart';
+import 'package:mynotes/services/authentication/bloc/auth_event.dart';
+import 'package:mynotes/services/authentication/bloc/auth_state.dart';
 
 class RegisterView extends StatefulWidget {
   const RegisterView({super.key});
@@ -18,61 +20,57 @@ class _RegisterViewState extends State<RegisterView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Register"),
-      ),
-      body: Center(
-        child: Form(
-          child: Column(
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
-                child: TextFormField(
-                  controller: _email,
-                  decoration: const InputDecoration(hintText: 'Enter email'),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-              ),
-              Padding(
-                  padding: const EdgeInsetsDirectional.symmetric(
-                      horizontal: 8, vertical: 10),
+    return BlocListener<AuthBloc, AuthState>(
+      listener: (context, state) async {
+        if (state is! AuthenticationNeedsRegistrationState) {
+          return;
+        }
+        final throwable = state.throwable;
+        if (throwable == null) {
+          return;
+        }
+        await showErrorMessage(context, 'Registration', throwable.message);
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Register"),
+        ),
+        body: Center(
+          child: Form(
+            child: Column(
+              children: [
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
                   child: TextFormField(
-                    controller: _password,
-                    decoration:
-                        const InputDecoration(hintText: 'Enter password'),
-                    obscureText: true,
-                    enableSuggestions: false,
-                  )),
-              ElevatedButton(
-                onPressed: () async {
-                  try {
+                    controller: _email,
+                    decoration: const InputDecoration(hintText: 'Enter email'),
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                ),
+                Padding(
+                    padding: const EdgeInsetsDirectional.symmetric(
+                        horizontal: 8, vertical: 10),
+                    child: TextFormField(
+                      controller: _password,
+                      decoration:
+                          const InputDecoration(hintText: 'Enter password'),
+                      obscureText: true,
+                      enableSuggestions: false,
+                    )),
+                ElevatedButton(
+                  onPressed: () async {
                     final String email = _email.text;
                     final String password = _password.text;
 
-                    await authService.register(
-                      email: email,
-                      password: password,
-                    );
-                    Navigator.of(context).pushNamedAndRemoveUntil(
-                      Routes.loginRoute,
-                      (route) => false,
-                    );
-                  } on UserAlreadyExistsException {
-                    showErrorMessage(context, 'Registration',
-                        'User with given email already exists');
-                  } on WeakPasswordException {
-                    showErrorMessage(context, 'Registration',
-                        'Please enter a strong password');
-                  } on AuthenticationException {
-                    showErrorMessage(context, 'Registration',
-                        'Could not register, please try again');
-                  }
-                },
-                child: const Text('Register'),
-              ),
-            ],
+                    context
+                        .read<AuthBloc>()
+                        .add(RegisterEvent(email: email, password: password));
+                  },
+                  child: const Text('Register'),
+                ),
+              ],
+            ),
           ),
         ),
       ),

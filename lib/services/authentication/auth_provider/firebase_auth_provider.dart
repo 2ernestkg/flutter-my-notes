@@ -28,7 +28,7 @@ class FirebaseAuthProvider implements AuthProvider {
       } else if (e.code == 'invalid-email') {
         throw InvalidEmailException();
       }
-      throw AuthenticationException();
+      throw const AuthenticationException('Registration failure');
     }
   }
 
@@ -62,7 +62,7 @@ class FirebaseAuthProvider implements AuthProvider {
       } else if (e.code == 'invalid-email') {
         throw InvalidEmailException();
       }
-      throw AuthenticationException();
+      throw const AuthenticationException('Login Failure');
     }
   }
 

@@ -1,9 +1,12 @@
 import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/common/dialogs.dart';
 import 'package:mynotes/routes.dart';
 import 'package:mynotes/services/authentication/authentication.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
+import 'package:mynotes/services/authentication/bloc/auth_bloc.dart';
+import 'package:mynotes/services/authentication/bloc/auth_event.dart';
 import 'package:mynotes/services/notes/note.dart';
 import 'package:mynotes/services/notes/note_service.dart';
 import 'package:mynotes/views/notes/note_list_view.dart';
@@ -56,11 +59,7 @@ class _NotesViewState extends State<NotesView> {
             if (!isLogOutConfirmed) {
               return;
             }
-            await _authenticationService.logout();
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              Routes.loginRoute,
-              (_) => false,
-            );
+            context.read<AuthBloc>().add(const LogOutEvent());
           }
         }),
       ]),

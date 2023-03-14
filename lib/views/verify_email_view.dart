@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:mynotes/routes.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
+import 'package:mynotes/services/authentication/bloc/auth_bloc.dart';
+import 'package:mynotes/services/authentication/bloc/auth_event.dart';
 
-class VerifyEmailView extends StatefulWidget {
+class VerifyEmailView extends StatelessWidget {
   const VerifyEmailView({super.key});
-
-  @override
-  State<VerifyEmailView> createState() => _VerifyEmailViewState();
-}
-
-class _VerifyEmailViewState extends State<VerifyEmailView> {
-  final _authService = AuthenticationService();
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +33,9 @@ class _VerifyEmailViewState extends State<VerifyEmailView> {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
               child: ElevatedButton(
                 onPressed: () async {
-                  await _authService.logout();
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                      Routes.loginRoute, (route) => false);
+                  context
+                      .read<AuthBloc>()
+                      .add(const SendValidationEmailEvent());
                 },
                 child: const Text('Log Out'),
               ),

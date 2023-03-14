@@ -1,11 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/routes.dart';
-import 'package:mynotes/views/login_view.dart';
+import 'package:mynotes/services/authentication/authentication_service.dart';
+import 'package:mynotes/services/authentication/bloc/auth_bloc.dart';
 import 'package:mynotes/views/notes/note_form.dart';
-import 'package:mynotes/views/notes/notes_view.dart';
-import 'package:mynotes/views/register_view.dart';
-import 'package:mynotes/views/verify_email_view.dart';
 
 import 'app_container.dart';
 
@@ -25,19 +24,18 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        Routes.loginRoute: (context) => const LoginView(),
-        Routes.registerRoute: (context) => const RegisterView(),
-        Routes.notesRoute: (context) => const NotesView(),
-        Routes.verifyEmailRoute: (context) => const VerifyEmailView(),
         Routes.notesForm: (context) => const NoteFormView(),
       },
       home: FutureBuilder(
         future: Firebase.initializeApp(),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return const AppContainer();
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const CircularProgressIndicator();
           }
-          return const CircularProgressIndicator();
+          return BlocProvider<AuthBloc>(
+            create: (context) => AuthBloc(AuthenticationService()),
+            child: const AppContainer(),
+          );
         },
       ),
     );
