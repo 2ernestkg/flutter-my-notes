@@ -1,16 +1,13 @@
-import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mynotes/common/dialogs.dart';
 import 'package:mynotes/routes.dart';
-import 'package:mynotes/services/authentication/authentication.dart';
 import 'package:mynotes/services/authentication/authentication_service.dart';
 import 'package:mynotes/services/authentication/bloc/auth_bloc.dart';
 import 'package:mynotes/services/authentication/bloc/auth_event.dart';
 import 'package:mynotes/services/notes/note.dart';
 import 'package:mynotes/services/notes/note_service.dart';
 import 'package:mynotes/views/notes/note_list_view.dart';
-import 'package:mynotes/views/verify_email_view.dart';
 
 class NotesView extends StatefulWidget {
   const NotesView({super.key});
@@ -20,7 +17,7 @@ class NotesView extends StatefulWidget {
 }
 
 class _NotesViewState extends State<NotesView> {
-  final _authenticationService = AuthenticationService();
+  final _userId = AuthenticationService().auth.id;
   final _noteService = NoteService();
 
   @override
@@ -31,11 +28,6 @@ class _NotesViewState extends State<NotesView> {
 
   @override
   Widget build(BuildContext context) {
-    final Authentication currentUser = _authenticationService.auth;
-    if (!currentUser.isEmailVerified) {
-      developer.log('${currentUser.isEmailVerified} email not yet verified');
-      return const VerifyEmailView();
-    }
     return Scaffold(
       appBar: AppBar(title: const Text('Notes'), actions: [
         IconButton(
@@ -64,16 +56,16 @@ class _NotesViewState extends State<NotesView> {
         }),
       ]),
       body: FutureBuilder(
-        future: _noteService.getUserNotes(),
+        future: _noteService.getNotes(_userId),
         builder: (builder, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           return StreamBuilder(
             stream: _noteService.notes,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator();
+                return const Center(child: CircularProgressIndicator());
               }
               final notes = snapshot.data as List<Note>;
               return NoteListView(

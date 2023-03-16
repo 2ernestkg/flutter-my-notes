@@ -5,6 +5,10 @@ class AuthEvent {
   const AuthEvent();
 }
 
+class ShouldLoginEvent extends AuthEvent {
+  const ShouldLoginEvent();
+}
+
 class ShouldRegisterEvent extends AuthEvent {
   const ShouldRegisterEvent();
 }

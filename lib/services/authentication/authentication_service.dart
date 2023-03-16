@@ -29,19 +29,19 @@ class AuthenticationService {
   Future<Authentication> register({
     required String email,
     required String password,
-  }) {
-    return _provider.createUser(
+  }) async {
+    return await _provider.createUser(
       username: email,
       password: password,
     );
   }
 
-  Future<void> logout() {
+  Future<void> logout() async {
     _auth = AnonymousAuthentication();
-    return _provider.logout();
+    return await _provider.logout();
   }
 
-  Future<void> sendEmailVerificationCode() {
-    return _provider.sendEmailVerification();
+  Future<void> sendEmailVerificationCode() async {
+    return await _provider.sendEmailVerification();
   }
 }

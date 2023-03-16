@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:mynotes/services/authentication/auth_provider.dart';
 import 'package:mynotes/services/authentication/authentication.dart';
@@ -69,10 +71,11 @@ class FirebaseAuthProvider implements AuthProvider {
   @override
   Future<void> logout() async {
     final currentUser = _firebaseAuth.currentUser;
+    log("current user is ${currentUser == null ? 'null' : 'not null'}");
     if (currentUser == null) {
       throw UserIsNotLoggedInException();
     }
-    return _firebaseAuth.signOut();
+    return await _firebaseAuth.signOut();
   }
 
   @override
@@ -81,6 +84,6 @@ class FirebaseAuthProvider implements AuthProvider {
     if (currentUser == null) {
       throw UserIsNotLoggedInException();
     }
-    return currentUser.sendEmailVerification();
+    return await currentUser.sendEmailVerification();
   }
 }

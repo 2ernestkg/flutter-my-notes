@@ -6,47 +6,70 @@ import 'package:mynotes/services/authentication/bloc/auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(AuthenticationService authenticationService)
-      : super(const UnauthenticatedState()) {
+      : super(const UnauthenticatedState(isLoading: false)) {
+    on<ShouldLoginEvent>((event, emit) {
+      emit(const UnauthenticatedState(isLoading: false));
+    });
     on<LogOutEvent>((event, emit) async {
-      await authenticationService.logout();
-      emit(const UnauthenticatedState());
+      emit(AuthenticatedState(
+        authentication: AuthenticationService().auth,
+        isLoading: true,
+        loadingText: 'Logging out',
+      ));
+      try {
+        await authenticationService.logout();
+        emit(const UnauthenticatedState(isLoading: false));
+      } on AuthenticationException catch (e) {
+        emit(UnauthenticatedState(isLoading: false, throwable: e));
+      }
     });
     on<LogInEvent>((event, emit) async {
+      emit(const UnauthenticatedState(
+          isLoading: true, loadingText: 'Logging in, please wait'));
       try {
         final auth = await authenticationService.login(
           email: event.email,
           password: event.password,
         );
-        emit(AuthenticatedState(auth));
+        emit(AuthenticatedState(authentication: auth, isLoading: false));
       } on AuthenticationException catch (e) {
-        emit(UnauthenticatedState(e));
+        emit(UnauthenticatedState(isLoading: false, throwable: e));
       }
     });
     on<ShouldRegisterEvent>((event, emit) {
-      emit(const AuthenticationNeedsRegistrationState());
+      emit(const AuthenticationNeedsRegistrationState(isLoading: false));
     });
     on<RegisterEvent>((event, emit) async {
+      emit(const UnauthenticatedState(
+        isLoading: true,
+        loadingText: 'Registering...',
+      ));
       try {
         final auth = await authenticationService.register(
           email: event.email,
           password: event.password,
         );
         if (!auth.isEmailVerified) {
-          emit(const AuthenticationNeedsVerificationState());
+          emit(const AuthenticationNeedsVerificationState(isLoading: false));
           return;
         }
-        emit(AuthenticatedState(auth));
+        emit(AuthenticatedState(authentication: auth, isLoading: false));
       } on AuthenticationException catch (e) {
-        emit(AuthenticationNeedsRegistrationState(e));
+        emit(AuthenticationNeedsRegistrationState(
+            isLoading: false, throwable: e));
       }
     });
     on<SendValidationEmailEvent>((event, emit) async {
+      emit(const AuthenticationNeedsVerificationState(
+        isLoading: true,
+        loadingText: 'Sending verification email, please check your inbox',
+      ));
       try {
         await authenticationService.sendEmailVerificationCode();
         await authenticationService.logout();
-        emit(const UnauthenticatedState());
+        emit(const UnauthenticatedState(isLoading: false));
       } on AuthenticationException catch (_) {
-        emit(const AuthenticationNeedsVerificationState());
+        emit(const AuthenticationNeedsVerificationState(isLoading: false));
       }
     });
   }

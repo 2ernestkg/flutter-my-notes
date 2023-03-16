@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mynotes/common/context_extensions.dart';
+import 'package:mynotes/services/authentication/authentication_service.dart';
 import 'package:mynotes/services/notes/note.dart';
 import 'package:mynotes/services/notes/note_service.dart';
 
@@ -52,22 +53,10 @@ class _NoteFormViewState extends State<NoteFormView> {
       return note;
     }
 
-    final newNote = await _noteService.createNote('');
+    final currentUserId = AuthenticationService().auth.id;
+    final newNote = await _noteService.createNote(currentUserId, '');
     _note = newNote;
     return newNote;
-  }
-
-  void _textControllerListener() async {
-    final note = _note;
-    if (note == null) {
-      return;
-    }
-    await _noteService.updateNote(note.id, _textController.text);
-  }
-
-  void _setupTextControllerListener() {
-    _textController.removeListener(_textControllerListener);
-    _textController.addListener(_textControllerListener);
   }
 
   @override
@@ -80,7 +69,7 @@ class _NoteFormViewState extends State<NoteFormView> {
         future: _createOrGetNote(context),
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const CircularProgressIndicator();
+            return const Center(child: CircularProgressIndicator());
           }
           //_setupTextControllerListener();
           return Column(
