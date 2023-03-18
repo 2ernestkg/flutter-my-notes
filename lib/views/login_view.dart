@@ -53,6 +53,8 @@ class _LoginViewState extends State<LoginView> {
                           keyboardType: TextInputType.emailAddress,
                           controller: _email,
                           enableSuggestions: false,
+                          decoration: const InputDecoration(
+                              hintText: 'Enter your email'),
                           validator: (value) {
                             if (value == null ||
                                 !EmailValidator.validate(value)) {
@@ -67,6 +69,8 @@ class _LoginViewState extends State<LoginView> {
                           controller: _password,
                           enableSuggestions: false,
                           obscureText: true,
+                          decoration: const InputDecoration(
+                              hintText: 'Enter your password'),
                           validator: (value) {
                             if (value == null) {
                               return "Please enter a password";
